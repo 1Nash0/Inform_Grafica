@@ -26,6 +26,8 @@ int main(int argc, char** argv)
 		return -1;
 
 	//Se ajusta la cámara
+	
+
 	//Si no se da valor se cojen valores por defecto
 	glm::mat4 model = glm::mat4(1.0f);
 	glm::mat4 view = glm::mat4(1.0f);
@@ -44,7 +46,7 @@ int main(int argc, char** argv)
 
 	IGlib::setProjMat(proj);
 	IGlib::setViewMat(view);
-
+	
 	//Creamos el objeto que vamos a visualizar
 	objId = IGlib::createObj(cubeNTriangleIndex, cubeNVertex, cubeTriangleIndex,
 		cubeVertexPos, cubeVertexColor, cubeVertexNormal, cubeVertexTexCoord, cubeVertexTangent);
@@ -77,11 +79,33 @@ int main(int argc, char** argv)
 	IGlib::mainLoop();
 	IGlib::destroy();
 	return 0;
+
+
 }
 
 void resizeFunc(int width, int height)
 {
-	//Ajusta el aspect ratio al tamaño de la venta
+	/*
+	glm::mat4 model = glm::mat4(1.0f);
+	glm::mat4 view = glm::mat4(1.0f);
+	glm::mat4 proj = glm::mat4(0.0f);
+
+	view[3].z = -6.f;
+
+	float n = 1.f;
+	float f = 10.f;
+	int W = width;
+	int H = height;
+
+	proj[0][0] = 2 * n / W;
+	proj[1][1] = 2 * n / H;
+	proj[2][2] = (f + n) / (n - f);
+	proj[2][3] = -1.f;
+	proj[3][2] = 2.f * f * n / (n - f);
+
+	IGlib::setProjMat(proj);
+	IGlib::setViewMat(view);
+	*/
 }
 
 void idleFunc()
