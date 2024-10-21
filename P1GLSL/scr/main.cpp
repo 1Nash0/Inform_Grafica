@@ -11,13 +11,31 @@
 int objId = -1;
 int objId2 = -1;
 
-//DeclaraciÛn de CB
+//DeclaraciÔøΩn de CB
 void resizeFunc(int width, int height);
 void idleFunc();
 void keyboardFunc(unsigned char key, int x, int y);
 void mouseFunc(int button, int state, int x, int y);
 void mouseMotionFunc(int x, int y);
 
+/*
+// Variables de la c√°mara
+glm::vec3 cameraPosition = glm::vec3(0.0f, 0.3f, 2.0f);
+// posici√≥n de la c√°mara en el espacio
+glm::vec3 targetPosition = glm::vec3(0.0f, 0.0f, 30.0f);
+// posici√≥n hacia donde mira la c√°mara
+glm::vec3 upVector = glm::vec3(0.0f, 1.0f, 0.0f);
+// vector de la c√°mara hacia arriba
+glm::vec3 front = normalize(targetPosition - cameraPosition);
+// direcci√≥n de la c√°mara hacia delante
+glm::vec3 rigth = normalize(cross(upVector, front));
+// direcci√≥n de la c√°mara hacia la derecha
+glm::vec3 up = normalize(cross(front, rigth));
+// direcci√≥n de la c√°mara hacia arriba
+float cameraSpeed = 0.5f; // velocidad de movimiento de la c√°mara
+glm::mat4 view; // Necesitamos que sean globales para que las funciones call-backs
+glm::mat4 proj; // puedan acceder a ellas
+*/
 
 int main(int argc, char** argv)
 {
@@ -25,9 +43,11 @@ int main(int argc, char** argv)
 	if (!IGlib::init("../shaders_P1/shader.v7.vert", "../shaders_P1/shader.v7.frag"))
 		return -1;
 
-	//Se ajusta la c·mara
-	
-
+	//Se ajusta la cÔøΩmara
+	/*
+	view = glm::mat4(1.0); // Inicializamos las que hemos creado arriba
+	proj = glm::mat4(1.0);
+	*/
 	//Si no se da valor se cojen valores por defecto
 	glm::mat4 model = glm::mat4(1.0f);
 	glm::mat4 view = glm::mat4(1.0f);
@@ -61,7 +81,7 @@ int main(int argc, char** argv)
 		cubeVertexPos, cubeVertexColor, cubeVertexNormal, cubeVertexTexCoord, cubeVertexTangent);
 
 	IGlib::setModelMat(objId2, modelMat);
-	//Incluir texturas aquÌ.
+	//Incluir texturas aquÔøΩ.
 	IGlib::addColorTex(objId, "../img/color.png");
 	IGlib::addColorTex(objId2, "../img/color.png");
 
@@ -85,28 +105,33 @@ int main(int argc, char** argv)
 
 void resizeFunc(int width, int height)
 {
-	/*
-	glm::mat4 model = glm::mat4(1.0f);
-	glm::mat4 view = glm::mat4(1.0f);
-	glm::mat4 proj = glm::mat4(0.0f);
+	
+		//Creaci√≥n de la matriz de projecci√≥n que mantiene el aspecto de la ventana
+		glm::mat4 proj = glm::mat4(1.0f);
 
-	view[3].z = -6.f;
 
-	float n = 1.f;
-	float f = 10.f;
-	int W = width;
-	int H = height;
+		float a_ratio = static_cast<float>(width) / height;
 
-	proj[0][0] = 2 * n / W;
-	proj[1][1] = 2 * n / H;
-	proj[2][2] = (f + n) / (n - f);
-	proj[2][3] = -1.f;
-	proj[3][2] = 2.f * f * n / (n - f);
+		float n = 1.0f;
+		float f = 10.0f;
 
-	IGlib::setProjMat(proj);
-	IGlib::setViewMat(view);
-	*/
+		float r = a_ratio;
+		float l = -a_ratio;
+		float t = 1.0f;
+		float b = -1.0f;
+
+		proj[0][0] = (2 * n) / ((r - l) / 1.732f);
+		proj[1][1] = (2 * n) / ((t - b) / 1.732f);
+		proj[2][2] = (f + n) / (n - f);
+		proj[2][3] = -1.f;
+		proj[3][2] = 2.f * f * n / (n - f);
+
+		IGlib::setProjMat(proj);
+	
+
 }
+	
+
 
 void idleFunc()
 {
@@ -119,7 +144,7 @@ void idleFunc()
 	IGlib::setModelMat(objId, rot);
 
 
-	//RotaciÛn del segundo objeto
+	//RotaciÔøΩn del segundo objeto
 
 	glm::mat4 rot2 = glm::mat4(1.0);
 	rot2 = glm::rotate(rot2, angle, glm::vec3(0.0f, 1.0f, 0.0f));
@@ -132,20 +157,40 @@ void idleFunc()
 void keyboardFunc(unsigned char key, int x, int y)
 {
 	std::cout << "Se ha pulsado la tecla " << key << std::endl << std::endl;
+	/*glm::mat4 aux = glm::mat4(1.0f);
+	// Creamos una matriz auxiliar en la que definimos los cambios
+	if (key == 'W' || key == 'w') // Si pulsamos w
+		aux[3].z = (aux[3].z + 1.0f) * cameraSpeed;
+	// la c√°mara se mueve hacia delante (la escena hacia atr√°s, eje z negativo)
+	if (key == 'S' || key == 's') // si pulsamos s
+		aux[3].z = (aux[3].z - 1.0f) * cameraSpeed; // lo contrario
+	if (key == 'A' || key == 'a') // si pulsamos a
+		aux[3].x = (aux[3].x + 1.0f) * cameraSpeed;
+	// se despaza a la derecha (escena a la izquierda)
+	if (key == 'D' || key == 'd') // si pulsamos d
+		aux[3].x = (aux[3].x - 1.0f) * cameraSpeed; // lo contrario
+	if (key == 'E' || key == 'e') // si pulsamos e
+		aux = rotate(aux, 0.1f, glm::vec3(0.0, 1.0, 0.0));
+	// rota hacia la izquierda sobre el eje y
+	if (key == 'Q' || key == 'q') // y si pulsamos q
+		aux = rotate(aux, 0.1f, glm::vec3(0.0, -1.0, 0.0)); // a la derecha
+	view = aux * view; // multiplicamos la matriz de vista por nuestra matriz auxiliar
+	IGlib::setViewMat(view); // y la actualizamo
+	*/
 }
 
 void mouseFunc(int button, int state, int x, int y)
 {
 	if (state == 0)
-		std::cout << "Se ha pulsado el botÛn ";
+		std::cout << "Se ha pulsado el botÔøΩn ";
 	else
-		std::cout << "Se ha soltado el botÛn ";
+		std::cout << "Se ha soltado el botÔøΩn ";
 
-	if (button == 0) std::cout << "de la izquierda del ratÛn " << std::endl;
-	if (button == 1) std::cout << "central del ratÛn " << std::endl;
-	if (button == 2) std::cout << "de la derecha del ratÛn " << std::endl;
+	if (button == 0) std::cout << "de la izquierda del ratÔøΩn " << std::endl;
+	if (button == 1) std::cout << "central del ratÔøΩn " << std::endl;
+	if (button == 2) std::cout << "de la derecha del ratÔøΩn " << std::endl;
 
-	std::cout << "en la posiciÛn " << x << " " << y << std::endl << std::endl;
+	std::cout << "en la posiciÔøΩn " << x << " " << y << std::endl << std::endl;
 }
 
 void mouseMotionFunc(int x, int y)
