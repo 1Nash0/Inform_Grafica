@@ -11,6 +11,16 @@
 int objId = -1;
 int objId2 = -1;
 
+// Variables para la cámara
+glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 6.0f);
+glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+
+float yaw = -90.0f; // Inicialmente apuntamos hacia -Z
+float pitch = 0.0f;
+float cameraSpeed = 0.05f; // Velocidad de la cámara
+float sensitivity = 0.1f;  // Sensibilidad para el giro
+
 //Declaraci�n de CB
 void resizeFunc(int width, int height);
 void idleFunc();
@@ -18,24 +28,12 @@ void keyboardFunc(unsigned char key, int x, int y);
 void mouseFunc(int button, int state, int x, int y);
 void mouseMotionFunc(int x, int y);
 
-/*
-// Variables de la cámara
-glm::vec3 cameraPosition = glm::vec3(0.0f, 0.3f, 2.0f);
-// posición de la cámara en el espacio
-glm::vec3 targetPosition = glm::vec3(0.0f, 0.0f, 30.0f);
-// posición hacia donde mira la cámara
-glm::vec3 upVector = glm::vec3(0.0f, 1.0f, 0.0f);
-// vector de la cámara hacia arriba
-glm::vec3 front = normalize(targetPosition - cameraPosition);
-// dirección de la cámara hacia delante
-glm::vec3 rigth = normalize(cross(upVector, front));
-// dirección de la cámara hacia la derecha
-glm::vec3 up = normalize(cross(front, rigth));
-// dirección de la cámara hacia arriba
-float cameraSpeed = 0.5f; // velocidad de movimiento de la cámara
-glm::mat4 view; // Necesitamos que sean globales para que las funciones call-backs
-glm::mat4 proj; // puedan acceder a ellas
-*/
+// Actualiza la vista de la cámara
+void updateCamera() {
+	glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+	IGlib::setViewMat(view);
+}
+
 
 int main(int argc, char** argv)
 {
@@ -43,15 +41,15 @@ int main(int argc, char** argv)
 	if (!IGlib::init("../shaders_P1/shader.v7.vert", "../shaders_P1/shader.v7.frag"))
 		return -1;
 
-	//Se ajusta la c�mara
-	/*
-	view = glm::mat4(1.0); // Inicializamos las que hemos creado arriba
-	proj = glm::mat4(1.0);
-	*/
-	//Si no se da valor se cojen valores por defecto
+	// Se ajusta la cámara
 	glm::mat4 model = glm::mat4(1.0f);
-	glm::mat4 view = glm::mat4(1.0f);
-	glm::mat4 proj = glm::mat4(0.0f);
+	glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp); // Inicializamos la vista
+	glm::mat4 proj = glm::mat4(1.0f);
+
+	
+	
+	//Si no se da valor se cojen valores por defecto
+	
 
 	view[3].z = -6.f;
 
@@ -156,41 +154,49 @@ void idleFunc()
 
 void keyboardFunc(unsigned char key, int x, int y)
 {
-	std::cout << "Se ha pulsado la tecla " << key << std::endl << std::endl;
-	/*glm::mat4 aux = glm::mat4(1.0f);
-	// Creamos una matriz auxiliar en la que definimos los cambios
-	if (key == 'W' || key == 'w') // Si pulsamos w
-		aux[3].z = (aux[3].z + 1.0f) * cameraSpeed;
-	// la cámara se mueve hacia delante (la escena hacia atrás, eje z negativo)
-	if (key == 'S' || key == 's') // si pulsamos s
-		aux[3].z = (aux[3].z - 1.0f) * cameraSpeed; // lo contrario
-	if (key == 'A' || key == 'a') // si pulsamos a
-		aux[3].x = (aux[3].x + 1.0f) * cameraSpeed;
-	// se despaza a la derecha (escena a la izquierda)
-	if (key == 'D' || key == 'd') // si pulsamos d
-		aux[3].x = (aux[3].x - 1.0f) * cameraSpeed; // lo contrario
-	if (key == 'E' || key == 'e') // si pulsamos e
-		aux = rotate(aux, 0.1f, glm::vec3(0.0, 1.0, 0.0));
-	// rota hacia la izquierda sobre el eje y
-	if (key == 'Q' || key == 'q') // y si pulsamos q
-		aux = rotate(aux, 0.1f, glm::vec3(0.0, -1.0, 0.0)); // a la derecha
-	view = aux * view; // multiplicamos la matriz de vista por nuestra matriz auxiliar
-	IGlib::setViewMat(view); // y la actualizamo
-	*/
+	switch (key) {
+	case 'w':
+		cameraPos += cameraSpeed * cameraFront;  // Mover hacia adelante
+		break;
+	case 's':
+		cameraPos -= cameraSpeed * cameraFront;  // Mover hacia atrás
+		break;
+	case 'a':
+		cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;  // Mover a la izquierda
+		break;
+	case 'd':
+		cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;  // Mover a la derecha
+		break;
+	case 'q':
+		yaw -= sensitivity;  // Girar a la izquierda
+		break;
+	case 'e':
+		yaw += sensitivity;  // Girar a la derecha
+		break;
+	}
+
+	// Actualizamos la dirección de la cámara según el yaw y el pitch
+	glm::vec3 direction;
+	direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+	direction.y = sin(glm::radians(pitch));
+	direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+	cameraFront = glm::normalize(direction);
+
+	updateCamera();
 }
 
 void mouseFunc(int button, int state, int x, int y)
 {
 	if (state == 0)
-		std::cout << "Se ha pulsado el bot�n ";
+		std::cout << "Se ha pulsado el botón ";
 	else
-		std::cout << "Se ha soltado el bot�n ";
+		std::cout << "Se ha soltado el botón ";
 
-	if (button == 0) std::cout << "de la izquierda del rat�n " << std::endl;
-	if (button == 1) std::cout << "central del rat�n " << std::endl;
-	if (button == 2) std::cout << "de la derecha del rat�n " << std::endl;
+	if (button == 0) std::cout << "de la izquierda del ratón " << std::endl;
+	if (button == 1) std::cout << "central del ratón " << std::endl;
+	if (button == 2) std::cout << "de la derecha del ratón " << std::endl;
 
-	std::cout << "en la posici�n " << x << " " << y << std::endl << std::endl;
+	std::cout << "en la posición " << x << " " << y << std::endl << std::endl;
 }
 
 void mouseMotionFunc(int x, int y)
