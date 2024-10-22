@@ -38,7 +38,7 @@ void updateCamera() {
 int main(int argc, char** argv)
 {
 	std::locale::global(std::locale("spanish"));// acentos ;)
-	if (!IGlib::init("../shaders_P1/shader.v8.vert", "../shaders_P1/shader.v8.frag"))
+	if (!IGlib::init("../shaders_P1/shader.v9.vert", "../shaders_P1/shader.v9.frag"))
 		return -1;
 
 	// Se ajusta la cámara
@@ -80,8 +80,8 @@ int main(int argc, char** argv)
 
 	IGlib::setModelMat(objId2, modelMat);
 	//Incluir texturas aqu�.
-	IGlib::addColorTex(objId, "../img/color.png");
-	IGlib::addColorTex(objId2, "../img/color.png");
+	IGlib::addColorTex(objId, "../img/sonrisa.png");
+	IGlib::addColorTex(objId2, "../img/sonrisa.png");
 
 
 
