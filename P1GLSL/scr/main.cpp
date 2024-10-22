@@ -28,7 +28,7 @@ void keyboardFunc(unsigned char key, int x, int y);
 void mouseFunc(int button, int state, int x, int y);
 void mouseMotionFunc(int x, int y);
 
-// Actualiza la vista de la cámara
+//Actualiza la vista de la cámara
 void updateCamera() {
 	glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 	IGlib::setViewMat(view);
@@ -38,7 +38,7 @@ void updateCamera() {
 int main(int argc, char** argv)
 {
 	std::locale::global(std::locale("spanish"));// acentos ;)
-	if (!IGlib::init("../shaders_P1/shader.v7.vert", "../shaders_P1/shader.v7.frag"))
+	if (!IGlib::init("../shaders_P1/shader.v8.vert", "../shaders_P1/shader.v8.frag"))
 		return -1;
 
 	// Se ajusta la cámara
