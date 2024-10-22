@@ -17,7 +17,6 @@ glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
 float yaw = -90.0f; // Inicialmente apuntamos hacia -Z
-float pitch = 0.0f;
 float cameraSpeed = 0.2f; // Velocidad de la cámara
 float sensitivity = 1.0f;  // Sensibilidad para el giro
 
@@ -38,7 +37,7 @@ void updateCamera() {
 int main(int argc, char** argv)
 {
 	std::locale::global(std::locale("spanish"));// acentos ;)
-	if (!IGlib::init("../shaders_P1/shader.vEjer4.vert", "../shaders_P1/shader.vEjer4.frag"))
+	if (!IGlib::init("../shaders_P1/shader.vEjer5a.vert", "../shaders_P1/shader.vEjer5a.frag"))
 		return -1;
 
 	// Se ajusta la cámara
@@ -175,12 +174,11 @@ void keyboardFunc(unsigned char key, int x, int y)
 		break;
 	}
 
-	// Actualizamos la dirección de la cámara según el yaw y el pitch
-	glm::vec3 direction;
-	direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-	direction.y = sin(glm::radians(pitch));
-	direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-	cameraFront = glm::normalize(direction);
+	// Actualizamos la dirección de la cámara según el yaw 
+	
+	cameraFront.x = cos(glm::radians(yaw));
+	cameraFront.z = sin(glm::radians(yaw));
+	cameraFront = glm::normalize(cameraFront);
 
 	updateCamera();
 }
