@@ -38,12 +38,12 @@ void updateCamera() {
 int main(int argc, char** argv)
 {
 	std::locale::global(std::locale("spanish"));// acentos ;)
-	if (!IGlib::init("../shaders_P1/shader.v9.vert", "../shaders_P1/shader.v9.frag"))
+	if (!IGlib::init("../shaders_P1/shader.vEjer5a.vert", "../shaders_P1/shader.vEjer5a.frag"))
 		return -1;
 
 	// Se ajusta la cámara
 	glm::mat4 model = glm::mat4(1.0f);
-	glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp); // Inicializamos la vista
+	glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp); 
 	glm::mat4 proj = glm::mat4(1.0f);
 
 	
