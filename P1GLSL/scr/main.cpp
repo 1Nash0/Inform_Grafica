@@ -18,8 +18,8 @@ glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
 float yaw = -90.0f; // Inicialmente apuntamos hacia -Z
 float pitch = 0.0f;
-float cameraSpeed = 0.05f; // Velocidad de la cámara
-float sensitivity = 0.1f;  // Sensibilidad para el giro
+float cameraSpeed = 0.2f; // Velocidad de la cámara
+float sensitivity = 1.0f;  // Sensibilidad para el giro
 
 //Declaraci�n de CB
 void resizeFunc(int width, int height);
@@ -38,7 +38,7 @@ void updateCamera() {
 int main(int argc, char** argv)
 {
 	std::locale::global(std::locale("spanish"));// acentos ;)
-	if (!IGlib::init("../shaders_P1/shader.vEjer5a.vert", "../shaders_P1/shader.vEjer5a.frag"))
+	if (!IGlib::init("../shaders_P1/shader.vEjer4.vert", "../shaders_P1/shader.vEjer4.frag"))
 		return -1;
 
 	// Se ajusta la cámara
