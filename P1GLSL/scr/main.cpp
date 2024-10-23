@@ -107,25 +107,18 @@ void resizeFunc(int width, int height)
 		glm::mat4 proj = glm::mat4(1.0f);
 
 
-		float a_ratio = static_cast<float>(width) / height;
-
+		float a_ratio = float(width) / float(height);
 		float n = 1.0f;
-		float f = 10.0f;
+		float f = 10.0f;	
 
-		float r = a_ratio;
-		float l = -a_ratio;
-		float t = 1.0f;
-		float b = -1.0f;
-
-		proj[0][0] = (2 * n) / ((r - l) / 1.732f);
-		proj[1][1] = (2 * n) / ((t - b) / 1.732f);
+		proj[0][0] = 1.0f / glm::tan(3.141592f / 6.0f);
+		proj[1][1] = proj[0][0] * a_ratio;
 		proj[2][2] = (f + n) / (n - f);
 		proj[2][3] = -1.f;
 		proj[3][2] = 2.f * f * n / (n - f);
 
 		IGlib::setProjMat(proj);
 	
-
 }
 	
 
